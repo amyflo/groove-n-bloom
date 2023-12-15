@@ -1,1 +1,1 @@
-# diary-cs347
+# chugl-garden
