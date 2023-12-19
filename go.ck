@@ -9,9 +9,9 @@
 [
     "mouse.ck",
     "obj-loader.ck",
-    // "ground.ck",
+    "sky.ck",
+    "ground.ck",
     "water.ck",
-    // "sky.ck",
     "garden.ck"
 ] @=> string files[];
 

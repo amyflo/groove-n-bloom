@@ -4,7 +4,7 @@
 // Each pad is a GPlane + mouse listener + state machine for handling input 
 // and transitioning between various modes e.g. hovered, active, playing, etc.
 // ============================================================================ 
-public class GPad extends GGen {
+public class WPad extends GGen {
 
     // load textures
     FileTexture plants[17];
