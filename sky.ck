@@ -5,14 +5,20 @@
 // and transitioning between various modes e.g. hovered, active, playing, etc.
 // ============================================================================ 
 public class GPad extends GGen {
-    // initialize mesh
-    GPointLight light--> GSphere bulb--> this;
-    FlatMaterial mat;
-    bulb.mat(mat);
-    mat.color(@(0.5, 1, 1));
-    light.falloff(0.14, 0.7);
-    Math.random2f(0.5, 1.5) => float pulseRate;
 
+    // load textures
+    FileTexture plants[17];
+    for (int i; i < 17; i++) {
+        plants[i].path(me.dir() + "data/sky/" + (i) + ".png");
+    }
+
+    // initialize mesh
+    GMesh mesh --> this;
+    BoxGeometry boxGeo;
+    PhongMaterial mat;
+    mat.diffuseMap(plants[0]);
+    mesh.set(boxGeo, mat);
+    
     // reference to a mouse
     Mouse @ mouse;
 
@@ -22,7 +28,6 @@ public class GPad extends GGen {
     // states
     0 => static int NONE;
     1 => static int HOVER_NONE; 
-
 
     2 => static int SEED;
     3 => static int HOVER_SEED;
@@ -54,38 +59,6 @@ public class GPad extends GGen {
     3 => static int NOTE_ON;
     4 => static int NOTE_OFF;
 
-    // color map
-    [
-        // NONE
-        Color.BLACK,    // NONE
-        Color.GRAY,      // ACTIVE
-
-        // SEED
-        Color.RED,   // DEFAULT
-        Color.PINK,   // HOVER
-        Color.WHITE,     // ACTIVE
-
-        // SPROUT
-        Color.ORANGE,   // DEFAULT
-        Color.PINK,   // HOVER
-        Color.WHITE,     // PLAYING
-
-        // PLANT
-        Color.YELLOW,   // DEFAULT
-        Color.PINK,   // HOVER
-        Color.WHITE,     // ACTIVE
-
-        // BUD
-        Color.GREEN,   // DEFAULT
-        Color.PINK,   // HOVER
-        Color.WHITE,     // ACTIVE
-
-        // BLOOM
-        Color.BLUE,   // DEFAULT
-        Color.PINK,   // HOVER
-        Color.WHITE     // ACTIVE
-    ] @=> vec3 colorMap[];
-
     // constructor
     fun void init(Mouse @ m) {
         if (mouse != null) return;
@@ -102,6 +75,10 @@ public class GPad extends GGen {
             || state == BUD;
     }
 
+    fun int getState() {
+        return state;
+    }
+
     fun int hover(){
         return state == HOVER_NONE 
             || state == HOVER_SEED 
@@ -113,16 +90,17 @@ public class GPad extends GGen {
 
 
     // set color
-    fun void color(vec3 c) {
-        bulb.mat().color(c);
+    fun void texture(FileTexture tex) {
+        mat.diffuseMap(tex);
+        mesh.set(boxGeo, mat);
     }
 
     // returns true if mouse is hovering over pad
     fun int isHovered() {
-        bulb.scaWorld() => vec3 worldScale;  // get dimensions
+        mesh.scaWorld() => vec3 worldScale;  // get dimensions
         worldScale.x / 2.0 => float halfWidth;
         worldScale.y / 2.0 => float halfHeight;
-        bulb.posWorld() => vec3 worldPos;   // get position
+        mesh.posWorld() => vec3 worldPos;   // get position
 
         if (mouse.worldPos.x > worldPos.x - halfWidth && mouse.worldPos.x < worldPos.x + halfWidth &&
             mouse.worldPos.y > worldPos.y - halfHeight && mouse.worldPos.y < worldPos.y + halfHeight) {
@@ -148,6 +126,7 @@ public class GPad extends GGen {
             mouse.mouseDownEvents[Mouse.LEFT_CLICK] => now;
             if (isHovered()) {
                 onClickEvent.broadcast();
+                400::ms => now; // cooldown
                 handleInput(MOUSE_CLICK);
             }
             100::ms => now; // cooldown
@@ -159,8 +138,8 @@ public class GPad extends GGen {
     fun void play(int juice) {
         handleInput(NOTE_ON);
         if (juice) {
-            bulb.sca(1.4);
-            bulb.rotZ(Math.random2f(-.5, .2));
+            mesh.sca(1.4);
+            mesh.rotZ(Math.random2f(-.5, .2));
         }
     }
 
@@ -241,7 +220,7 @@ public class GPad extends GGen {
             if (input == MOUSE_EXIT)       enter(SPROUT);
             else if (input == MOUSE_CLICK)       enter(PLANT);
         } else if (state == HOVER_PLANT){
-            if (input == MOUSE_EXIT)       enter(HOVER_PLANT);
+            if (input == MOUSE_EXIT)       enter(PLANT);
             else if (input == MOUSE_CLICK)       enter(BUD);
         } else if (state == HOVER_BUD){
             if (input == MOUSE_EXIT)       enter(BUD);
@@ -280,16 +259,16 @@ public class GPad extends GGen {
         pollHover();
 
         // update state
-        this.color(colorMap[state]);
+        this.texture(plants[state]);
 
         // interpolate back towards uniform scale (handles animation)
 
         // this is cursed
         // pad.scaX()  - .03 * Math.pow(Math.fabs((1.0 - pad.scaX())), .3) => pad.sca;
         
-        // much less cursed
-        bulb.scaX()  + .05 * (1.0 - bulb.scaX()) => bulb.sca;
-        bulb.rot().z  + .06 * (0.0 - bulb.rot().z) => bulb.rotZ;
+        //much less cursed
+        mesh.scaX()  + .05 * (1.0 - mesh.scaX()) => mesh.sca;
+        mesh.rot().z  + .06 * (0.0 - mesh.rot().z) => mesh.rotZ;
 
     }
 }
