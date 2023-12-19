@@ -7,7 +7,7 @@ spork ~ mouse.selfUpdate(); // start updating mouse position
 
 120 => int BPM;  // beats per minute
 (1.0/BPM)::minute / 2.0 => dur STEP;  // step duration
-16 => int NUM_STEPS;  // steps per sequence]
+8 => int NUM_STEPS;  // steps per sequence]
 
 [
     -5, -2, 0, 3, 5, 7, 10, 12, 15
@@ -16,6 +16,7 @@ spork ~ mouse.selfUpdate(); // start updating mouse position
 // Scene setup ================================================================
 GG.scene() @=> GScene @ scene;
 GG.camera() @=> GCamera @ cam;
+scene.backgroundColor(Color.WHITE);
 cam.orthographic();  // Orthographic camera mode for 2D scene
 
 GGen kickPadGroup --> GG.scene();        // bottom row
@@ -50,7 +51,7 @@ fun void placePads() {
     (GG.frameWidth() * 1.0) / (GG.frameHeight() * 1.0) => float aspect;
     // calculate ratio between old and new height/width
     cam.viewSize() => float frustrumHeight;  // height of screen in world-space units
-    frustrumHeight * aspect => float frustrumWidth;  // widht of the screen in world-space units
+    frustrumHeight * aspect => float frustrumWidth;  // width of the screen in world-space units
     frustrumWidth / NUM_STEPS => float padSpacing;
 
     // resize pads
@@ -60,42 +61,42 @@ fun void placePads() {
         - frustrumHeight / 2.0 + padSpacing / 2.0
     );
 
-    placePadsHorizontal(
-        snarePads, snarePadGroup,
-        frustrumWidth,
-        frustrumHeight / 2.0 - padSpacing / 2.0
-    );
+    // placePadsHorizontal(
+    //     snarePads, snarePadGroup,
+    //     frustrumWidth,
+    //     frustrumHeight / 2.0 - padSpacing / 2.0
+    // );
 
-    // place relative to first kick pad
-    kickPads[0].posWorld().x => float openHatX;
-    (snarePads[0].posWorld() - kickPads[0].posWorld()).y - padSpacing => float hatHeight;
-    placePadsVertical(
-        openHatPads, openHatPadGroup,
-        hatHeight,
-        openHatX
-    );
+    // // place relative to first kick pad
+    // kickPads[0].posWorld().x => float openHatX;
+    // (snarePads[0].posWorld() - kickPads[0].posWorld()).y - padSpacing => float hatHeight;
+    // placePadsVertical(
+    //     openHatPads, openHatPadGroup,
+    //     hatHeight,
+    //     openHatX
+    // );
 
-    kickPads[kickPads.size()-1].posWorld().x => float closedHatX;
-    placePadsVertical(
-        closedHatPads, closedHatPadGroup,
-        hatHeight,
-        closedHatX
-    );
+    // kickPads[kickPads.size()-1].posWorld().x => float closedHatX;
+    // placePadsVertical(
+    //     closedHatPads, closedHatPadGroup,
+    //     hatHeight,
+    //     closedHatX
+    // );
 
-    // place lead pads
-    (snarePads[snarePads.size()-2].posWorld() - snarePads[1].posWorld()).x => float leadWidth;
-    Math.min(leadWidth / NUM_STEPS, hatHeight / acidBassPads[0].size()) => float leadScale;
-    for (0 => int i; i < NUM_STEPS; i++) {
-        placePadsVertical(
-            acidBassPads[i], acidBassGroups[i],
-            hatHeight,
-            snarePads[1].posWorld().x + (i * leadWidth / (acidBassPads.size() - 1.0))
-        );
-        // rescale pad sizes
-        for (0 => int j; j < acidBassPads[i].size(); j++) {
-            acidBassPads[i][j].sca(leadScale * .7);
-        }
-    }
+    // // place lead pads
+    // (snarePads[snarePads.size()-2].posWorld() - snarePads[1].posWorld()).x => float leadWidth;
+    // Math.min(leadWidth / NUM_STEPS, hatHeight / acidBassPads[0].size()) => float leadScale;
+    // for (0 => int i; i < NUM_STEPS; i++) {
+    //     placePadsVertical(
+    //         acidBassPads[i], acidBassGroups[i],
+    //         hatHeight,
+    //         snarePads[1].posWorld().x + (i * leadWidth / (acidBassPads.size() - 1.0))
+    //     );
+    //     // rescale pad sizes
+    //     for (0 => int j; j < acidBassPads[i].size(); j++) {
+    //         acidBassPads[i][j].sca(leadScale * .7);
+    //     }
+    // }
 }
 
 // places along horizontal axis
