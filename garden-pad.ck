@@ -20,20 +20,29 @@ public class GPad extends GGen {
     Event onHoverEvent, onClickEvent;  // onExit, onRelease
     
     // states
-    0 => static int NONE;  // not hovered or active
-    1 => static int HOVERED;  // hovered
+    0 => static int NONE;
+    1 => static int HOVER_NONE; 
+
 
     2 => static int SEED;
-    3 => static int PLAYING_SEED;
+    3 => static int HOVER_SEED;
+    4 => static int ACTIVE_SEED;
 
-    4 => static int SPROUT;
-    5 => static int PLAYING_SPROUT;
+    5 => static int SPROUT;
+    6 => static int HOVER_SPROUT;
+    7 => static int ACTIVE_SPROUT;
 
-    6 => static int BUD;
-    7 => static int PLAYING_BUD;
+    8 => static int PLANT;
+    9 => static int HOVER_PLANT;
+    10 => static int ACTIVE_PLANT;
 
-    8 => static int BLOOM;
-    9 => static int PLAYING_BLOOM;
+    11 => static int BUD;
+    12 => static int HOVER_BUD;
+    13 => static int ACTIVE_BUD;
+
+    14 => static int BLOOM;
+    15 => static int HOVER_BLOOM;
+    16 => static int ACTIVE_BLOOM;
     
 
     0 => int state; // current state
@@ -47,24 +56,34 @@ public class GPad extends GGen {
 
     // color map
     [
+        // NONE
         Color.BLACK,    // NONE
-        Color.BLUE,      // HOVERED
+        Color.GRAY,      // ACTIVE
 
         // SEED
         Color.RED,   // DEFAULT
-        Color.WHITE,     // PLAYING
+        Color.PINK,   // HOVER
+        Color.WHITE,     // ACTIVE
 
         // SPROUT
         Color.ORANGE,   // DEFAULT
+        Color.PINK,   // HOVER
         Color.WHITE,     // PLAYING
+
+        // PLANT
+        Color.YELLOW,   // DEFAULT
+        Color.PINK,   // HOVER
+        Color.WHITE,     // ACTIVE
 
         // BUD
-        Color.YELLOW,   // DEFAULT
-        Color.WHITE,     // PLAYING
+        Color.GREEN,   // DEFAULT
+        Color.PINK,   // HOVER
+        Color.WHITE,     // ACTIVE
 
         // BLOOM
-        Color.GREEN,   // DEFAULT
-        Color.WHITE     // PLAYING
+        Color.BLUE,   // DEFAULT
+        Color.PINK,   // HOVER
+        Color.WHITE     // ACTIVE
     ] @=> vec3 colorMap[];
 
     // constructor
@@ -76,7 +95,20 @@ public class GPad extends GGen {
 
     // check if state is active (i.e. should play sound)
     fun int active() {
-        return state == SEED || state == SPROUT || state == BLOOM || state == BUD;
+        return state == SEED 
+            || state == SPROUT 
+            || state == PLANT 
+            || state == BLOOM 
+            || state == BUD;
+    }
+
+    fun int hover(){
+        return state == HOVER_NONE 
+            || state == HOVER_SEED 
+            || state == HOVER_SPROUT
+            || state == HOVER_PLANT 
+            || state ==  HOVER_BUD 
+            || state == HOVER_BLOOM;
     }
 
 
@@ -105,7 +137,7 @@ public class GPad extends GGen {
             onHoverEvent.broadcast();
             handleInput(MOUSE_HOVER);
         } else {
-            if (state == HOVERED) handleInput(MOUSE_EXIT);
+            if (hover()) handleInput(MOUSE_EXIT);
         }
     }
 
@@ -155,16 +187,19 @@ public class GPad extends GGen {
     fun void handleInput(int input) {
         if (input == NOTE_ON) {
             if (state == SEED) {
-                enter(PLAYING_SEED);
+                enter(ACTIVE_SEED);
                 return;
             } else if (state == SPROUT) {
-                enter (PLAYING_SPROUT);
+                enter (ACTIVE_SPROUT);
+                return;
+            }else if (state == PLANT) {
+                enter (ACTIVE_PLANT);
                 return;
             } else if (state == BUD){
-                enter (PLAYING_BUD);
+                enter (ACTIVE_BUD);
                 return;
             } else if (state == BLOOM) {
-                enter (PLAYING_BLOOM);
+                enter (ACTIVE_BLOOM);
                 return;
             }
         }
@@ -174,43 +209,69 @@ public class GPad extends GGen {
             return;
         }
 
-        // on click & on hover events
+        // MODE: NONE
         if (state == NONE) {
-            if (input == MOUSE_HOVER)      enter(HOVERED);
+            if (input == MOUSE_HOVER)      enter(HOVER_NONE);
             else if (input == MOUSE_CLICK) enter(SEED);
-            
-        } else if (state == HOVERED) {
-            if (input == MOUSE_EXIT)       enter(NONE);
-            else if (input == MOUSE_CLICK) enter(SEED);
-
         } else if (state == SEED) {
-            if (input == MOUSE_CLICK)      enter(SPROUT);
+            if (input == MOUSE_HOVER)      enter(HOVER_SEED);
+            else if (input == MOUSE_CLICK)      enter(SPROUT);
         } else if (state == SPROUT) {
-            if (input == MOUSE_CLICK)      enter(BUD);
+            if (input == MOUSE_HOVER)      enter(HOVER_SPROUT);
+            else if (input == MOUSE_CLICK)      enter(PLANT);
+        } else if (state == PLANT) {
+            if (input == MOUSE_HOVER)      enter(HOVER_PLANT);
+            else if (input == MOUSE_CLICK)      enter(BUD);
         } else if (state == BUD) {
-            if (input == MOUSE_CLICK)      enter(BLOOM);
+            if (input == MOUSE_HOVER)      enter(HOVER_BUD);
+            else if (input == MOUSE_CLICK)      enter(BLOOM);
         } else if (state == BLOOM) {
-            if (input == MOUSE_CLICK)      enter(NONE); //  flower death
+            if (input == MOUSE_HOVER)      enter(HOVER_BLOOM);
+            else if (input == MOUSE_CLICK)      enter(NONE); //  flower death
         } 
-    
-        // changing from playing to original  state
-        else if (state == PLAYING_SEED) {
+
+        // MODE: HOVER 
+        else if (state == HOVER_NONE){
+            if (input == MOUSE_EXIT)       enter(NONE);
+            else if (input == MOUSE_CLICK)       enter(SEED);
+        } else if (state == HOVER_SEED){
+            if (input == MOUSE_EXIT)       enter(SEED);
+            else if (input == MOUSE_CLICK)       enter(SPROUT);
+        } else if (state == HOVER_SPROUT){
+            if (input == MOUSE_EXIT)       enter(SPROUT);
+            else if (input == MOUSE_CLICK)       enter(PLANT);
+        } else if (state == HOVER_PLANT){
+            if (input == MOUSE_EXIT)       enter(HOVER_PLANT);
+            else if (input == MOUSE_CLICK)       enter(BUD);
+        } else if (state == HOVER_BUD){
+            if (input == MOUSE_EXIT)       enter(BUD);
+            else if (input == MOUSE_CLICK)       enter(BLOOM);
+        } else if (state == HOVER_BLOOM){
+            if (input == MOUSE_EXIT)       enter(BLOOM);
+            else if (input == MOUSE_CLICK)       enter(NONE);
+        }
+       
+        // MODE: ACTIVE
+        else if (state == ACTIVE_SEED) {
             if (input == MOUSE_CLICK)      enter(NONE);
             else if (input == NOTE_OFF)         enter(SEED);
         }
-        else if (state == PLAYING_SPROUT) {
+        else if (state == ACTIVE_SPROUT) {
             if (input == MOUSE_CLICK)      enter(NONE);
             else if (input == NOTE_OFF)         enter(SPROUT);
         }
-        else if (state == PLAYING_BUD) {
+        else if (state == ACTIVE_PLANT) {
+            if (input == MOUSE_CLICK)      enter(NONE);
+            else if (input == NOTE_OFF)         enter(PLANT);
+        }
+        else if (state == ACTIVE_BUD) {
             if (input == MOUSE_CLICK)      enter(NONE);
             else if (input == NOTE_OFF)         enter(BUD);
         }
-        else if (state == PLAYING_BLOOM) {
+        else if (state == ACTIVE_BLOOM) {
             if (input == MOUSE_CLICK)      enter(NONE);
             else if (input == NOTE_OFF)         enter(BLOOM);
         } 
-        <<< state >>>;
     }
 
     // override ggen update
