@@ -75,6 +75,27 @@ public class GPad extends GGen {
             || state == BUD;
     }
 
+    fun int activeSeed(){
+        return state == SEED;
+    }
+
+    fun int activeSprout(){
+        return state == SPROUT;
+    }
+
+    fun int activePlant(){
+        return state == PLANT;
+    }
+
+    fun int activeBud(){
+        return state == BUD;
+    }
+
+    fun int activeBloom(){
+        return state == BLOOM;
+    }
+
+
     fun int getState() {
         return state;
     }

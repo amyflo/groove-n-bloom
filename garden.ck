@@ -159,5 +159,109 @@ fun void placeWPadsHorizontal(WPad pads[], GGen @ parent, float width, float y) 
     parent.posY(y);  // position the entire row
 }
 
+// base class for percussion instruments
+class Instrument extends Chugraph {
+    fun void seed() {}
+    fun void sprout() {}
+    fun void plant() {}
+    fun void bud() {}
+    fun void bloom(){}
+}
+
+class Kick extends Instrument { 
+    inlet => Noise n => LPF f => ADSR e => outlet;
+    110 => f.freq;
+    40 => f.gain;
+    e.set(5::ms, 50::ms, 0.1, 100::ms);
+
+    fun void seed() {
+        e.keyOn();
+        50::ms => now;
+        e.keyOff();
+        e.releaseTime() => now;
+    }
+    fun void sprout() {
+        e.keyOn();
+        50::ms => now;
+        e.keyOff();
+        e.releaseTime() => now;
+    }
+    fun void plant() {
+        e.keyOn();
+        50::ms => now;
+        e.keyOff();
+        e.releaseTime() => now;
+    }
+    fun void bud() {
+        e.keyOn();
+        50::ms => now;
+        e.keyOff();
+        e.releaseTime() => now;
+    }
+    fun void bloom(){
+        e.keyOn();
+        50::ms => now;
+        e.keyOff();
+        e.releaseTime() => now;
+    }  
+}
+
+// Sequencer ===================================================================
+Gain main => JCRev rev => dac;  // main bus
+.1 => main.gain;
+0.1 => rev.mix;
+
+// initialize percussion instruments
+Kick kick => main;
+
+
+// SEQUENCE GROUND
+spork ~ sequenceBeat(groundPad1, false, STEP, kick);
+spork ~ sequenceBeat(groundPad2, false, STEP, kick);
+spork ~ sequenceBeat(groundPad3, false, STEP, kick);
+
+fun void sequenceBeat(GPad pads[], int rev, dur step, Instrument @ instrument) {
+    0 => int i;
+    if (rev) pads.size() - 1 => i;
+    while (true) {
+        false => int juice;    
+
+        pads[i] @=> GPad pad; 
+        
+
+        if (pad.active()) {
+            true => juice;
+        }
+        
+        if (pad.activeSeed()){
+            spork ~ instrument.seed();  // play sound
+        }  else if (pad.activeSprout()){
+            spork ~ instrument.sprout();  // play sound
+        } else if (pad.activePlant()){
+            spork ~ instrument.plant();  // play sound
+        } else if (pad.activeBud()){
+            spork ~ instrument.bud();  // play sound
+        }  else if  (pad.activeBloom()){
+            spork ~ instrument.bloom();  // play sound
+        }
+        
+        // start animation
+        pad.play(juice);  // must happen after .active() check
+        // pass time
+        step => now;
+        // stop animation
+        pad.stop();
+
+        // bump index, wrap around playhead to other end
+        if (rev) {
+            i--;
+            if (i < 0) pads.size() - 1 => i;
+        } else {
+            i++;
+            if (i >= pads.size()) 0 => i;
+        }
+    }
+}
+
 // Game loop ==================================================================
 while (true) { GG.nextFrame() => now; }
