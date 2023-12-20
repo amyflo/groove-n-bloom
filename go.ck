@@ -7,11 +7,11 @@
 //-----------------------------------------------------------------------------
 
 [
-    "mouse.ck",
-    "obj-loader.ck",
-    "sky.ck",
-    "ground.ck",
-    "water.ck",
+    "/classes/mouse.ck",
+    "/classes/obj-loader.ck",
+    "/classes/pads/sky.ck",
+    "/classes/pads/ground.ck",
+    "/classes/pads/water.ck",
     "garden.ck"
 ] @=> string files[];
 
