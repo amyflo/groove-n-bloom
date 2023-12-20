@@ -58,23 +58,23 @@ fun void placePads() {
 }
 
 
-// fun void placeGPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) {
-//     width / pads.size() => float padSpacing;
-//     for (0 => int i; i < pads.size(); i++) {
-//         pads[i] @=> GPad pad;
+fun void placeGPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) {
+    width / pads.size() => float padSpacing;
+    for (0 => int i; i < pads.size(); i++) {
+        pads[i] @=> GPad pad;
 
-//         // initialize pad
-//         pad.init(mouse);
+        // initialize pad
+        pad.init(mouse);
 
-//         // connect to scene
-//         pad --> parent;
+        // connect to scene
+        pad --> parent;
 
-//         // set transform
-//         pad.sca(padSpacing * .7);
-//         pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
-//     }
-//     parent.posY(y);  // position the entire row
-// }
+        // set transform
+        pad.sca(padSpacing * .7);
+        pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
+    }
+    parent.posY(y);  // position the entire row
+}
 
 fun void placeSPadsHorizontal(SPad pads[], GGen @ parent, float width, float y) {
     width / pads.size() => float padSpacing;
@@ -94,23 +94,23 @@ fun void placeSPadsHorizontal(SPad pads[], GGen @ parent, float width, float y) 
     parent.posY(y);  // position the entire row
 }
 
-// fun void placeWPadsHorizontal(WPad pads[], GGen @ parent, float width, float y) {
-//     width / pads.size() => float padSpacing;
-//     for (0 => int i; i < pads.size(); i++) {
-//         pads[i] @=> WPad pad;
+fun void placeWPadsHorizontal(WPad pads[], GGen @ parent, float width, float y) {
+    width / pads.size() => float padSpacing;
+    for (0 => int i; i < pads.size(); i++) {
+        pads[i] @=> WPad pad;
 
-//         // initialize pad
-//         pad.init(mouse);
+        // initialize pad
+        pad.init(mouse);
 
-//         // connect to scene
-//         pad --> parent;
+        // connect to scene
+        pad --> parent;
 
-//         // set transform
-//         pad.sca(padSpacing * .7);
-//         pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
-//     }
-//     parent.posY(y);  // position the entire row
-// }
+        // set transform
+        pad.sca(padSpacing * .7);
+        pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
+    }
+    parent.posY(y);  // position the entire row
+}
 
 
 // Game loop ==================================================================

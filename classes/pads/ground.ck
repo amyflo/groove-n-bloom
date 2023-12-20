@@ -9,7 +9,7 @@ public class GPad extends GGen {
     // load textures
     FileTexture plants[17];
     for (int i; i < 17; i++) {
-        plants[i].path(me.dir() + "data/ground/" + (i) + ".png");
+        plants[i].path(me.dir() + "../../data/ground/" + (i) + ".png");
     }
 
     // initialize mesh
