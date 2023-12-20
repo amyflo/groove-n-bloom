@@ -8,10 +8,12 @@
 
 [
     "/classes/mouse.ck",
-    "/classes/obj-loader.ck",
+    
+    "/classes/pads/pad.ck",
     "/classes/pads/sky.ck",
     "/classes/pads/ground.ck",
     "/classes/pads/water.ck",
+    
     "garden.ck"
 ] @=> string files[];
 
