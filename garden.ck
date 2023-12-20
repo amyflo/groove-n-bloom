@@ -33,5 +33,60 @@ WPad water[NUM_STEPS][2];
 // make instruments 
 // make it change depending on the state
 
+fun void placeGPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) {
+    width / pads.size() => float padSpacing;
+    for (0 => int i; i < pads.size(); i++) {
+        pads[i] @=> GPad pad;
+
+        // initialize pad
+        pad.init(mouse);
+
+        // connect to scene
+        pad --> parent;
+
+        // set transform
+        pad.sca(padSpacing * .7);
+        pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
+    }
+    parent.posY(y);  // position the entire row
+}
+
+fun void placeSPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) {
+    width / pads.size() => float padSpacing;
+    for (0 => int i; i < pads.size(); i++) {
+        pads[i] @=> SPad pad;
+
+        // initialize pad
+        pad.init(mouse);
+
+        // connect to scene
+        pad --> parent;
+
+        // set transform
+        pad.sca(padSpacing * .7);
+        pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
+    }
+    parent.posY(y);  // position the entire row
+}
+
+fun void placeWPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) {
+    width / pads.size() => float padSpacing;
+    for (0 => int i; i < pads.size(); i++) {
+        pads[i] @=> WPad pad;
+
+        // initialize pad
+        pad.init(mouse);
+
+        // connect to scene
+        pad --> parent;
+
+        // set transform
+        pad.sca(padSpacing * .7);
+        pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
+    }
+    parent.posY(y);  // position the entire row
+}
+
+
 // Game loop ==================================================================
 while (true) { GG.nextFrame() => now; }
