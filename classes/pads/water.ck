@@ -9,7 +9,7 @@ public class WPad extends GGen {
     // load textures
     FileTexture plants[17];
     for (int i; i < 17; i++) {
-        plants[i].path(me.dir() + "data/water/" + (i) + ".png");
+        plants[i].path(me.dir() + "../../data/water/" + (i) + ".png");
     }
 
     // initialize mesh

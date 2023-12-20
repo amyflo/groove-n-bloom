@@ -9,7 +9,7 @@ public class SPad extends GGen {
     // load textures
     FileTexture plants[17];
     for (int i; i < 17; i++) {
-        plants[i].path(me.dir() + "data/sky/" + (i) + ".png");
+        plants[i].path(me.dir() + "../../data/sky/" + (i) + ".png");
     }
 
     // initialize mesh
