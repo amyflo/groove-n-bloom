@@ -63,6 +63,7 @@ fun void placePads() {
     placeGroundPads(frustrumWidth, frustrumHeight, padSpacing);    
 }
 
+// place pad types into scene
 fun void placeSkyPads(float frustrumWidth, float frustrumHeight, float padSpacing){
     placeSPadsHorizontal(
         skyPad, skyGroup,
@@ -103,6 +104,7 @@ fun void placeGroundPads(float frustrumWidth, float frustrumHeight, float padSpa
     ); 
 }
 
+// place pads horizontally
 fun void placeGPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) {
     width / pads.size() => float padSpacing;
     for (0 => int i; i < pads.size(); i++) {
