@@ -12,22 +12,31 @@ spork ~ mouse.selfUpdate(); // start updating mouse position
 // Scene setup ================================================================
 GG.scene() @=> GScene @ scene;
 GG.camera() @=> GCamera @ cam;
-scene.backgroundColor(Color.WHITE);
+scene.backgroundColor(@(0.5, 0.75, 1));
+
+
 cam.orthographic();  // Orthographic camera mode for 2D scene
 
-// sky
+// SKY
 GGen skyGroup --> GG.scene();
-SPad sky[NUM_STEPS];
+SPad skyPad[NUM_STEPS];
 
-// ground
-GGen groundGroups[NUM_STEPS];
-for (auto group : groundGroups) group --> GG.scene();
-GPad ground[NUM_STEPS][3];
+// GROUND
+GGen groundGroup1 --> GG.scene();
+GGen groundGroup2 --> GG.scene();
+GGen groundGroup3 --> GG.scene();
 
-// water
-GGen waterGroups[NUM_STEPS];
-for (auto group : waterGroups) group --> GG.scene();
-WPad water[NUM_STEPS][2];
+GPad groundPad1[NUM_STEPS];
+GPad groundPad2[NUM_STEPS];
+GPad groundPad3[NUM_STEPS];
+
+// WATER
+GGen waterGroup1 --> GG.scene();
+GGen waterGroup2 --> GG.scene();
+
+WPad waterPad1[NUM_STEPS];
+WPad waterPad2[NUM_STEPS];
+
 
 // update pad positions on window resize
 fun void resizeListener() {
@@ -49,14 +58,50 @@ fun void placePads() {
     frustrumHeight * aspect => float frustrumWidth;  // width of the screen in world-space units
     frustrumWidth / NUM_STEPS => float padSpacing;
 
-    // resize pads
-    placeSPadsHorizontal(
-        sky, skyGroup,
-        frustrumWidth,
-        - frustrumHeight / 2.0 + padSpacing / 2.0
-    );
+    placeSkyPads(frustrumWidth, frustrumHeight, padSpacing);
+    placeWaterPads(frustrumWidth, frustrumHeight, padSpacing);
+    placeGroundPads(frustrumWidth, frustrumHeight, padSpacing);    
 }
 
+fun void placeSkyPads(float frustrumWidth, float frustrumHeight, float padSpacing){
+    placeSPadsHorizontal(
+        skyPad, skyGroup,
+        frustrumWidth,
+        - frustrumHeight / 2.0 + padSpacing / 2.0 + 5 * padSpacing
+    ); 
+}
+
+fun void placeWaterPads(float frustrumWidth, float frustrumHeight, float padSpacing){
+    placeWPadsHorizontal(
+        waterPad1, waterGroup1,
+        frustrumWidth,
+        - frustrumHeight / 2.0 + padSpacing / 2.0
+    ); 
+    placeWPadsHorizontal(
+        waterPad2, waterGroup2,
+        frustrumWidth,
+        - frustrumHeight / 2.0 + padSpacing / 2.0 + padSpacing
+    ); 
+}
+
+fun void placeGroundPads(float frustrumWidth, float frustrumHeight, float padSpacing){
+    // GROUND
+    placeGPadsHorizontal(
+        groundPad1, groundGroup1,
+        frustrumWidth,
+        - frustrumHeight / 2.0 + padSpacing / 2.0 + 2 * padSpacing
+    ); 
+    placeGPadsHorizontal(
+        groundPad2, groundGroup2,
+        frustrumWidth,
+        - frustrumHeight / 2.0 + padSpacing / 2.0 + 3 * padSpacing
+    ); 
+    placeGPadsHorizontal(
+        groundPad3, groundGroup3,
+        frustrumWidth,
+        - frustrumHeight / 2.0 + padSpacing / 2.0 + 4 * padSpacing
+    ); 
+}
 
 fun void placeGPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) {
     width / pads.size() => float padSpacing;
@@ -70,7 +115,7 @@ fun void placeGPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) 
         pad --> parent;
 
         // set transform
-        pad.sca(padSpacing * .7);
+        pad.sca(padSpacing);
         pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
     }
     parent.posY(y);  // position the entire row
@@ -88,7 +133,7 @@ fun void placeSPadsHorizontal(SPad pads[], GGen @ parent, float width, float y) 
         pad --> parent;
 
         // set transform
-        pad.sca(padSpacing * .7);
+        pad.sca(padSpacing);
         pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
     }
     parent.posY(y);  // position the entire row
@@ -106,12 +151,11 @@ fun void placeWPadsHorizontal(WPad pads[], GGen @ parent, float width, float y) 
         pad --> parent;
 
         // set transform
-        pad.sca(padSpacing * .7);
+        pad.sca(padSpacing);
         pad.posX(padSpacing * i - width / 2.0 + padSpacing / 2.0);
     }
     parent.posY(y);  // position the entire row
 }
-
 
 // Game loop ==================================================================
 while (true) { GG.nextFrame() => now; }
