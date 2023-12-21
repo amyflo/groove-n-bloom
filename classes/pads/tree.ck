@@ -1,4 +1,4 @@
-public class SPad extends Pad {
+public class TPad extends Pad {
     // load textures
     FileTexture sky[17];
     for (int i; i < 17; i++) {

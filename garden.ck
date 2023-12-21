@@ -37,7 +37,7 @@ GGen waterGroup1 --> GG.scene();
 GGen waterGroup2 --> GG.scene();
 
 //  Pads -------------------------------------------------------------------
-SPad skyPad[NUM_STEPS];
+TPad skyPad[NUM_STEPS];
 
 GPad groundPad1[NUM_STEPS];
 GPad groundPad2[NUM_STEPS];
@@ -62,7 +62,7 @@ fun void placePads() {
 
 //  Placement by type -------------------------------------------------------------------
 fun void placeSkyPads(float frustrumWidth, float frustrumHeight, float padSpacing){
-    placeSPadsHorizontal(
+    placeTPadsHorizontal(
         skyPad, skyGroup,
         frustrumWidth,
         - frustrumHeight / 2.0 + padSpacing / 2.0 + 5 * padSpacing
@@ -120,10 +120,10 @@ fun void placeGPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) 
     parent.posY(y);  // position the entire row
 }
 
-fun void placeSPadsHorizontal(SPad pads[], GGen @ parent, float width, float y) {
+fun void placeTPadsHorizontal(TPad pads[], GGen @ parent, float width, float y) {
     width / pads.size() => float padSpacing;
     for (0 => int i; i < pads.size(); i++) {
-        pads[i] @=> SPad pad;
+        pads[i] @=> TPad pad;
 
         // initialize pad
         pad.init(mouse);
@@ -158,125 +158,77 @@ fun void placeWPadsHorizontal(WPad pads[], GGen @ parent, float width, float y) 
 
 //  Instruments ===================================================================
 class Instrument extends Chugraph {
-    fun void seed() {}
-    fun void sprout() {}
-    fun void plant() {}
-    fun void bud() {}
-    fun void bloom(){}
-}
-
-class skyIns extends Instrument { 
-    inlet => Noise n => LPF f => ADSR e => outlet;
-    110 => f.freq;
-    40 => f.gain;
-    e.set(5::ms, 50::ms, 0.1, 100::ms);
+    [60, 62, 64, 67, 69] @=> int notes[];
+    fun void play(float note, float velocity){}
 
     fun void seed() {
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
+        play(12 + notes[0], Math.random2f( .6, 1 ));
     }
+
     fun void sprout() {
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
+        play(12 + notes[1], Math.random2f( .6, 1 ));
     }
+
     fun void plant() {
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
+        play(12 + notes[2], Math.random2f( .6, 1 ));
     }
+
     fun void bud() {
+        play(12 + notes[3], Math.random2f( .6, 1 ));
+    }
+
+    fun void bloom() {
+        play(12 + notes[4], Math.random2f( .6, 1 ));
+    }
+}
+
+class Guitar extends Instrument {
+    inlet => Wurley voc => JCRev r => ADSR e => outlet;
+
+    [48, 50, 52, 55, 57] @=> notes;
+    fun void play(float note, float velocity){
+        Std.mtof( note ) => voc.freq;
+        velocity => voc.noteOn;
         e.keyOn();
         50::ms => now;
         e.keyOff();
         e.releaseTime() => now;
     }
-    fun void bloom(){
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
-    }  
 }
 
 class waterIns extends Instrument { 
-    inlet => Noise n => LPF f => ADSR e => outlet;
-    110 => f.freq;
-    40 => f.gain;
+    [72, 74, 76, 79, 81]  @=> notes;
+    inlet => Flute flute => PoleZero f => JCRev r => ADSR e => outlet;
+    .75 => r.gain;
+    .05 => r.mix;
+    .99 => f.blockZero;
     e.set(5::ms, 50::ms, 0.1, 100::ms);
 
-    fun void seed() {
+    fun void play(float note, float velocity){
+        Std.mtof( note ) => flute.freq;
+        velocity => flute.noteOn;
         e.keyOn();
         50::ms => now;
         e.keyOff();
         e.releaseTime() => now;
     }
-    fun void sprout() {
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
-    }
-    fun void plant() {
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
-    }
-    fun void bud() {
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
-    }
-    fun void bloom(){
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
-    }  
 }
 
-class groundIns extends Instrument { 
-    inlet => Noise n => LPF f => ADSR e => outlet;
-    110 => f.freq;
-    40 => f.gain;
+class Ins extends Instrument { 
+    inlet => Saxofony ins => JCRev r => ADSR e => outlet;
+    .75 => r.gain;
+    .1 => r.mix;
     e.set(5::ms, 50::ms, 0.1, 100::ms);
 
-    fun void seed() {
+    fun void play(float note, float velocity)
+    {
+        Std.mtof( note ) => ins.freq;
+        velocity => ins.noteOn;
         e.keyOn();
         50::ms => now;
         e.keyOff();
         e.releaseTime() => now;
     }
-    fun void sprout() {
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
-    }
-    fun void plant() {
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
-    }
-    fun void bud() {
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
-    }
-    fun void bloom(){
-        e.keyOn();
-        50::ms => now;
-        e.keyOff();
-        e.releaseTime() => now;
-    }  
 }
 
 // Sequencer ===================================================================
@@ -285,19 +237,19 @@ Gain main => JCRev rev => dac;  // main bus
 0.1 => rev.mix;
 
 // initialize instruments
-skyIns skyInstrument => main;
-waterIns waterInstrument => main;
-groundIns groundInstrument => main;
+Guitar ins1 => main;
+waterIns ins2 => main;
+Ins ins3 => main;
 
 // Beat Sporking -------------------------------------------------------------------
-spork ~ sequenceBeat(skyPad, false, STEP, skyInstrument);
+spork ~ sequenceBeat(skyPad, false, STEP, ins1);
 
-spork ~ sequenceBeat(groundPad1, false, STEP, groundInstrument);
-spork ~ sequenceBeat(groundPad2, false, STEP, groundInstrument);
-spork ~ sequenceBeat(groundPad3, false, STEP, groundInstrument);
+spork ~ sequenceBeat(groundPad1, false, STEP, ins2);
+spork ~ sequenceBeat(groundPad2, false, STEP, ins2);
+spork ~ sequenceBeat(groundPad3, false, STEP, ins2);
 
-spork ~ sequenceBeat(waterPad1, false, STEP, waterInstrument);
-spork ~ sequenceBeat(waterPad2, false, STEP, waterInstrument);
+spork ~ sequenceBeat(waterPad1, false, STEP, ins3);
+spork ~ sequenceBeat(waterPad2, false, STEP, ins3);
 
 //  Sequence Helpers -------------------------------------------------------------------
 fun void sequenceBeat(GPad pads[], int rev, dur step, Instrument @ instrument) {
@@ -386,13 +338,13 @@ fun void sequenceBeat(WPad pads[], int rev, dur step, Instrument @ instrument) {
     }
 }
 
-fun void sequenceBeat(SPad pads[], int rev, dur step, Instrument @ instrument) {
+fun void sequenceBeat(TPad pads[], int rev, dur step, Instrument @ instrument) {
     0 => int i;
     if (rev) pads.size() - 1 => i;
     while (true) {
         false => int juice;    
 
-        pads[i] @=> SPad pad; 
+        pads[i] @=> TPad pad; 
         
 
         if (pad.active()) {

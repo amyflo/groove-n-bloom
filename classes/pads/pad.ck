@@ -133,7 +133,6 @@ public class Pad extends GGen {
             mouse.mouseDownEvents[Mouse.LEFT_CLICK] => now;
             if (isHovered()) {
                 onClickEvent.broadcast();
-                400::ms => now; // cooldown
                 handleInput(MOUSE_CLICK);
             }
             100::ms => now; // cooldown

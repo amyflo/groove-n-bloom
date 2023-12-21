@@ -8,9 +8,8 @@
 
 [
     "/classes/mouse.ck",
-    
     "/classes/pads/pad.ck",
-    "/classes/pads/sky.ck",
+    "/classes/pads/tree.ck",
     "/classes/pads/ground.ck",
     "/classes/pads/water.ck",
     
