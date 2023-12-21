@@ -16,7 +16,7 @@ spork ~ mouse.selfUpdate(); // start updating mouse position
 // Scene setup ================================================================
 GG.scene() @=> GScene @ scene;
 GG.camera() @=> GCamera @ cam;
-scene.backgroundColor(@(0.5, 0.75, 1));
+scene.backgroundColor(@(0.35, 0.85, 1)); // sky blue
 cam.orthographic();  // Orthographic camera mode for 2D scene
 
 //  Resize listener -------------------------------------------------------------------
