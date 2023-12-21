@@ -3,6 +3,10 @@ Mouse mouse;
 spork ~ mouse.start(0);  // start listening for mouse events
 spork ~ mouse.selfUpdate(); // start updating mouse position
 
+1 => int playGround;
+1 => int playSky;
+1 => int playWater;
+
 // Global Sequencer Params ====================================================
 
 120 => int BPM;  // beats per minute
@@ -46,6 +50,29 @@ GPad groundPad3[NUM_STEPS];
 WPad waterPad1[NUM_STEPS];
 WPad waterPad2[NUM_STEPS];
 
+
+
+BoxGeometry boxGeo;
+boxGeo.set(11, 1, 1, 1, 1, 1);
+PhongMaterial mat;
+FileTexture tex;
+tex.path(me.dir() + "/data/grass.png");
+mat.diffuseMap(tex);
+
+
+GMesh mesh;
+mesh.set(boxGeo, mat);
+mesh.translateZ(-1);
+mesh.translateY(-1.5);
+mesh --> scene;
+
+GMesh top_mesh;
+top_mesh.set(boxGeo, mat);
+top_mesh.translateZ(-1);
+top_mesh.translateY(1.5);
+top_mesh --> scene;
+
+
 //  Pad Placement ===================================================================
 fun void placePads() {
     // recalculate aspect
@@ -65,7 +92,27 @@ fun void placeSkyPads(float frustrumWidth, float frustrumHeight, float padSpacin
     placeTPadsHorizontal(
         skyPad, skyGroup,
         frustrumWidth,
-        - frustrumHeight / 2.0 + padSpacing / 2.0 + 5 * padSpacing
+        - frustrumHeight / 2.0 + 6.5 * padSpacing
+    ); 
+}
+
+
+fun void placeGroundPads(float frustrumWidth, float frustrumHeight, float padSpacing){
+    // GROUND
+    placeGPadsHorizontal(
+        groundPad1, groundGroup1,
+        frustrumWidth,
+        - frustrumHeight / 2.0 + 3 * padSpacing
+    ); 
+    placeGPadsHorizontal(
+        groundPad2, groundGroup2,
+        frustrumWidth,
+        - frustrumHeight / 2.0 + 4 * padSpacing
+    ); 
+    placeGPadsHorizontal(
+        groundPad3, groundGroup3,
+        frustrumWidth,
+        - frustrumHeight / 2.0 + 5 * padSpacing
     ); 
 }
 
@@ -82,24 +129,6 @@ fun void placeWaterPads(float frustrumWidth, float frustrumHeight, float padSpac
     ); 
 }
 
-fun void placeGroundPads(float frustrumWidth, float frustrumHeight, float padSpacing){
-    // GROUND
-    placeGPadsHorizontal(
-        groundPad1, groundGroup1,
-        frustrumWidth,
-        - frustrumHeight / 2.0 + padSpacing / 2.0 + 2 * padSpacing
-    ); 
-    placeGPadsHorizontal(
-        groundPad2, groundGroup2,
-        frustrumWidth,
-        - frustrumHeight / 2.0 + padSpacing / 2.0 + 3 * padSpacing
-    ); 
-    placeGPadsHorizontal(
-        groundPad3, groundGroup3,
-        frustrumWidth,
-        - frustrumHeight / 2.0 + padSpacing / 2.0 + 4 * padSpacing
-    ); 
-}
 
 //  Placement Helpers -------------------------------------------------------------------
 fun void placeGPadsHorizontal(GPad pads[], GGen @ parent, float width, float y) {
@@ -244,18 +273,19 @@ Ins ins3 => main;
 // Beat Sporking -------------------------------------------------------------------
 spork ~ sequenceBeat(skyPad, false, STEP, ins1);
 
+spork ~ sequenceBeat(waterPad1, false, STEP, ins3);
+spork ~ sequenceBeat(waterPad2, false, STEP, ins3);
+
 spork ~ sequenceBeat(groundPad1, false, STEP, ins2);
 spork ~ sequenceBeat(groundPad2, false, STEP, ins2);
 spork ~ sequenceBeat(groundPad3, false, STEP, ins2);
 
-spork ~ sequenceBeat(waterPad1, false, STEP, ins3);
-spork ~ sequenceBeat(waterPad2, false, STEP, ins3);
 
 //  Sequence Helpers -------------------------------------------------------------------
 fun void sequenceBeat(GPad pads[], int rev, dur step, Instrument @ instrument) {
     0 => int i;
     if (rev) pads.size() - 1 => i;
-    while (true) {
+    while (playGround) {
         false => int juice;    
 
         pads[i] @=> GPad pad; 
@@ -298,7 +328,7 @@ fun void sequenceBeat(GPad pads[], int rev, dur step, Instrument @ instrument) {
 fun void sequenceBeat(WPad pads[], int rev, dur step, Instrument @ instrument) {
     0 => int i;
     if (rev) pads.size() - 1 => i;
-    while (true) {
+    while (playWater) {
         false => int juice;    
 
         pads[i] @=> WPad pad; 
@@ -341,7 +371,7 @@ fun void sequenceBeat(WPad pads[], int rev, dur step, Instrument @ instrument) {
 fun void sequenceBeat(TPad pads[], int rev, dur step, Instrument @ instrument) {
     0 => int i;
     if (rev) pads.size() - 1 => i;
-    while (true) {
+    while (playSky) {
         false => int juice;    
 
         pads[i] @=> TPad pad; 
